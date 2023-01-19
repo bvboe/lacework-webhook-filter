@@ -7,7 +7,7 @@ Parameters:
     Default: >-
             {"operator": "or","filters": [{"operator": "equals","field":
             "event_title","value": "Test Event"},{"operator": "in","field":
-            "rec_id","values": ["AWS_CIS_1_16", "AWS_CIS_1_16"]}]}
+            "rec_id","values": ["AWS_CIS_1_1", "AWS_CIS_1_16"]}]}
     Description: Filter for forwarding messages
   DestinationURL:
     Type: String
