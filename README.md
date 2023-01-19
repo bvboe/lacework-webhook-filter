@@ -19,3 +19,58 @@ Create a new alert channel in the Lacework UI and add the URL to the function.
 <img width="764" alt="image" src="https://user-images.githubusercontent.com/8701191/213567942-661d2fc8-44b4-45da-b059-7e0b8ce11e23.png">
 
 Click test in the Lacework UI to send a test message.
+## Webhook Filtering Language
+The webhook supports a number of filtering operators and the operators can be chained more complicated use cases. Given the following use case from https://docs.lacework.com/onboarding/webhook, you can do a number of different kinds of filters:
+```
+{
+    "event_title": "Compliance Changed",
+    "event_link": "https://myLacework.lacework.net/ui/investigate/Event/120884?startTime=1565370000000&endTime=1565373600000",
+    "lacework_account": "myLacework",
+    "event_source": "AzureCompliance",
+    "event_description":"Azure Account myLacework Pay-As-You-Go: Azure_CIS_2_1 Ensure that standard pricing tier is selected changed from compliant to non-compliant",
+    "event_timestamp":"27 May 2021 17:00 GMT",
+    "event_type": "Compliance",
+    "event_id": "120884",
+    "event_severity": "4",
+    "rec_id": "Azure_CIS_2_1"
+    }
+```
+### Equals
+`event_severity` equals 4:
+```
+{
+  "operator": "equals",
+  "field": "event_severity",
+  "value": "4"
+}
+```
+### Contains
+`event_title` includes the string "Changed":
+```
+{
+  "operator": "contains",
+  "field": "event_title",
+  "value": "Changed"
+}
+```
+### Not
+`rec_id` not equals "Azure_CIS_2_1":
+```
+{
+  "operator": "not",
+  "filter": {
+    "operator": "equals",
+    "field": "rec_id",
+    "value": "Azure_CIS_2_1"
+  }
+}
+```
+### In
+`rec_id` contains one of the following values: "Azure_CIS_2_1" or "Azure_CIS_2_2":
+```
+{
+  "operator": "in",
+  "field": "rec_id",
+  "values": ["Azure_CIS_2_1", "Azure_CIS_2_2"]
+}
+```
