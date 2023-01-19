@@ -2,9 +2,9 @@
 
 cd `dirname "$0"`
 mkdir -p build
+rm -f deployment-package.zip
 cd build
 rm -rf src
-rm -f lacework-webhook-filter.zip
 cp -r ../src .
 
 cd src
@@ -16,4 +16,4 @@ pip install \
     --only-binary=:all: --upgrade \
     requests
 
-zip -r ../lacework-webhook-filter.zip .
+zip -r ../../deployment-package.zip .
