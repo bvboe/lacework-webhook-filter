@@ -74,3 +74,37 @@ The webhook supports a number of filtering operators and the operators can be ch
   "values": ["Azure_CIS_2_1", "Azure_CIS_2_2"]
 }
 ```
+### And
+`event_source` equals "AzureCompliance" and `event_severity` equals "4":
+```
+{
+  "operator": "and",
+  "filters": [{
+    "operator": "equals",
+    "field": "event_source",
+    "value": "AzureCompliance"
+  },
+  {
+    "operator": "equals",
+    "field": "event_severity",
+    "value": "4"
+  }]
+}
+```
+### Or
+`event_title` equals "Test Event" or `rec_id` equals "AWS_CIS_1_1" or "AWS_CIS_1_16":
+```
+{
+  "operator": "or",
+  "filters": [{
+    "operator": "equals",
+    "field": "event_title",
+    "value": "Test Event"
+  },
+  {
+    "operator": "in",
+    "field": "rec_id",
+    "values": ["AWS_CIS_1_1", "AWS_CIS_1_16"]
+  }]
+}
+```
