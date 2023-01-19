@@ -2,7 +2,6 @@
 
 cd `dirname "$0"`
 mkdir -p build
-rm -f deployment-package.zip
 cd build
 rm -rf src
 cp -r ../src .
@@ -16,4 +15,4 @@ pip install \
     --only-binary=:all: --upgrade \
     requests
 
-zip -r ../../deployment-package.zip .
+zip -r ../deployment-package.zip .
