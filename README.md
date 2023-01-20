@@ -6,9 +6,10 @@ Open your AWS console, navigate to the CloudFormation console and select Create 
 Add the following URL as the template and click Next:
 https://bboe-lambda-code.s3.amazonaws.com/lacework-webhook-filter/LaceworkWebhookFilter.yaml
 
-![image](https://user-images.githubusercontent.com/8701191/213554605-6c7e56ad-12d6-41e6-8c1a-9d07bc4963d5.png)
-* The destination URL will be the location the webhook requests will be forwarded to.
+![image](https://user-images.githubusercontent.com/8701191/213804241-3c2b258c-fa78-4de0-91b9-e87be4b22fdd.png)
 * The filter defines what calls to forward to the destination. The default filter will forward test alerts and specific compliance alerts. See below for more information about the filtering language used.
+* The destination URL will be the location the webhook requests will be forwarded to.
+* Username and password can be provided for endpoints that require basic authentication
 
 Click Next until the Webhook has been deployed.
 
@@ -108,3 +109,30 @@ The webhook supports a number of filtering operators and the operators can be ch
   }]
 }
 ```
+## Notes For Integrating with Jira Cloud
+This webhook can also be put in front of Jira cloud. These messages tend to look as follows:
+```
+{
+  "fields": {
+    "summary": "Event: 0 (20 Jan 2023 20:41 GMT) Test Event",
+    "description": "This is a test Message.\n\n*Details*\n|Event Id|0|\n|Event Type|TestEvent|\n|Event Category|TestEvent|\n|Severity|0|\n|Start Time|20 Jan 2023 20:41 GMT|\n|Link|[Event Link | https://login.lacework.net]|\n|LW Account Name|ABC|\n\n\n",
+    "issuetype": {
+      "name": "Candidate"
+    },
+    "project": {
+      "key": "LT"
+    },
+    "priority": {
+      "id": "5"
+    }
+  }
+}
+```
+
+Do the following to setup this integration:
+* Setup an integration with Jira Server in the Lacework Dashboard.
+* Add link to Lambda Webhook
+* Configure Webhook to point to a URL that looks as follows: https://<your-site>.atlassian.net/rest/api/2/issue/
+* Set username to the user creating the issue
+* Set password to an API key generated at https://id.atlassian.com/manage-profile/security/api-tokens
+* Configure a filter that can look as follows to let test messages through: `{"operator": "contains","field": "fields.summary","value": "Test Event"}`
