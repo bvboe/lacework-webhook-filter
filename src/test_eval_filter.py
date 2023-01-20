@@ -1,12 +1,43 @@
 import lambda_function
 import json
+import logging
+
+logger = logging.getLogger().setLevel(logging.INFO)
+logging.info('Starting test')
 
 def do_test_eval_filter(filter, data, expectedOutput, description):
     result=lambda_function.eval_filter(filter, data)
     if result == expectedOutput:
-        print("Test: \"" + description + "\" passed")
+        logging.info("Test: \"" + description + "\" passed")
     else:
-        print("Test: \"" + description + "\" failed, expected " + str(expectedOutput) + ", got " + str(result))
+        logging.error("Test: \"" + description + "\" failed, expected " + str(expectedOutput) + ", got " + str(result))
+
+do_test_eval_filter({
+  "operator": "equals",
+  "field": "field-1.field-1-1",
+  "value": "abc"
+}, {
+  "field-1": {"field-1-1": "abc"},
+  "field-2": "def"
+}, True, "Nested equals return true")
+
+do_test_eval_filter({
+  "operator": "equals",
+  "field": "field-1.field-1-1",
+  "value": "abc"
+}, {
+  "field-1": {"field-1-1": "qqq"},
+  "field-2": "def"
+}, False, "Nested equals return false")
+
+do_test_eval_filter({
+  "operator": "equals",
+  "field": "field-1.field-1-1",
+  "value": "abc"
+}, {
+  "field-1": "abc",
+  "field-2": "def"
+}, False, "Nested equals return false - nested field don't exist")
 
 do_test_eval_filter({
   "operator": "equals",

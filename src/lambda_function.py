@@ -93,16 +93,33 @@ def eval_filter(filter, data):
     else:
         return 'not implemented'
 
+def getField(field, data):
+    #No data, return none
+    if data is None:
+        return None
+
+    #Data is not a json object, return none
+    if not isinstance(data, dict):
+        return None
+        
+    dotPos=field.find(".")
+    if dotPos < 0:
+        return data.get(field)
+    else:
+        firstField=field[0:dotPos]
+        remainingField=field[dotPos+1:]
+        return getField(remainingField, data.get(firstField))
+
 def eval_equals(filter, data):
     field=filter.get('field')
     expectedValue=filter.get('value')
-    actualValue=data.get(field)
+    actualValue=getField(field, data)
     return expectedValue == actualValue
 
 def eval_contains(filter, data):
     field=filter.get('field')
     expectedValue=filter.get('value')
-    actualValue=data.get(field)
+    actualValue=getField(field, data)
     
     if actualValue is None:
         return False

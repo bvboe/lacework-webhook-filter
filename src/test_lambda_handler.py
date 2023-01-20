@@ -1,9 +1,8 @@
 import lambda_function
 import json
 import logging
-import sys
 
-logger = logging.getLogger().setLevel(logging.WARN)
+logger = logging.getLogger().setLevel(logging.INFO)
 logging.info('Starting test')
 
 def do_test_lambda_handler(event, expectedOutput, description):
@@ -13,7 +12,7 @@ def do_test_lambda_handler(event, expectedOutput, description):
     logging.debug(result)
 
     if result == expectedOutput:
-        print("Test: \"" + description + "\" passed")
+        logging.info("Test: \"" + description + "\" passed")
     else:
         logging.error("Test: \"" + description + "\" failed, expected " + str(expectedOutput) + ", got " + str(result))
 
@@ -51,3 +50,4 @@ do_test_lambda_handler({
   "statusCode": 200,
   "body": "Message not forwarded"
 }, "Message not forwarded")
+
