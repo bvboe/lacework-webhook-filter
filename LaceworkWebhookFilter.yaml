@@ -75,3 +75,18 @@ Resources:
     Properties:
       TargetFunctionArn: !Ref LaceworkWebhookFilter
       AuthType: NONE
+Metadata: 
+  AWS::CloudFormation::Interface: 
+    ParameterGroups: 
+      - 
+        Label: 
+          default: "Filtering"
+        Parameters: 
+          - Filter
+      - 
+        Label: 
+          default: "Message Forwarding Destination"
+        Parameters: 
+          - DestinationURL
+          - DestinationUsername
+          - DestinationPassword
