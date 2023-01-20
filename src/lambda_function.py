@@ -11,33 +11,53 @@ def lambda_handler(event, context):
     logger.info(event)
     logger.info(context)
     
-    logger.info('Load filter')
+    logger.debug('Load filter')
     filter=load_parameter(event, 'filter')
-    logger.info('Load Webhook URL')
+    logger.debug(filter) 
+    logger.debug('Load Webhook URL')
     webhookUrl=load_parameter(event, 'webhookurl')
+    logger.debug(webhookUrl) 
     
-    logger.info('Load body')
+    logger.debug('Load body')
     data=event.get('body')
 
-    logger.info('Parse filter')
+    logger.debug('Parse filter')
     filter=parse_json(filter)
-    logger.info('Parse body')
+    logger.debug('Parse body')
     data=parse_json(data)
 
-    logger.info('Evaluate filter')
+    logger.debug('Evaluate filter')
     result=eval_filter(filter, data)
     
     if result == True and webhookUrl is not None:
         logger.info('Forward data using Webhook')
-        requests.put(webhookUrl, headers={'Content-type': 'application/json'}, data=json.dumps(data))
+        try:
+            r = requests.put(webhookUrl, headers={'Content-type': 'application/json'}, data=json.dumps(data))
+            logger.debug('Success!')
+            logger.debug(r)
+            httpResult={
+                'statusCode': r.status_code,
+                'body': r.text
+            }
+        except requests.exceptions.RequestException as e:
+            logger.debug('Request failed')
+            logger.debug(e)
+            httpResult={
+                'statusCode': 500,
+                'body': 'Can not connect to remote server ' + webhookUrl
+            }
     else:
         logger.info('Do not forward data')
+        httpResult={
+            'statusCode': 200,
+            'body': "Message not forwarded"
+        }
 
+    logger.debug('Result returned to client:')
+    logger.debug(httpResult)
     logger.info('End processing message!')
-    return {
-        'statusCode': 200,
-        'body': result
-    }
+
+    return httpResult
 
 def load_parameter(event, parameter):
     queryStringParameters=event.get('queryStringParameters')
