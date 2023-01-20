@@ -12,6 +12,12 @@ Parameters:
   DestinationURL:
     Type: String
     Description: Destination URL for messages
+  DestinationUsername:
+    Type: String
+    Description: Username for destination URL
+  DestinationPassword:
+    Type: String
+    Description: Password for destination URL
 Resources:
   LaceworkWebhookFilter:
     Type: 'AWS::Serverless::Function'
@@ -29,6 +35,10 @@ Resources:
             Ref: Filter
           webhookurl:
             Ref: DestinationURL
+          webhookusername:
+            Ref: DestinationUsername
+          webhookpassword:
+            Ref: DestinationPassword
   LaceworkWebhookFilterFunctionRole:
     Type: AWS::IAM::Role
     Properties:

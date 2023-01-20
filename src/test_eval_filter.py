@@ -245,3 +245,25 @@ do_test_eval_filter({
   "field-1": "abc",
   "field-2": "def"
 }, False, "Empty in operator")
+
+
+do_test_eval_filter({
+  "operator": "contains",
+  "field": "fields.summary",
+  "value": "Test Event"
+}, {
+  "fields": {
+    "summary": "Event: 0 (20 Jan 2023 19:33 GMT) Test Event",
+    "description": "This is a test Message.\n\n*Details*\n|Event Id|0|\n|Event Type|TestEvent|\n|Event Category|TestEvent|\n|Severity|0|\n|Start Time|20 Jan 2023 19:33 GMT|\n|Link|[Event Link | https://login.lacework.net]|\n|LW Account Name|LWINT-SE-BJORNBOE|\n\n\n",
+    "issuetype": {
+      "name": "Candidate"
+    },
+    "project": {
+      "key": "LT"
+    },
+    "priority": {
+      "id": "5"
+    }
+  }
+}
+, True, "Jira test")

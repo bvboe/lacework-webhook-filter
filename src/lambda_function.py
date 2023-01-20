@@ -17,9 +17,17 @@ def lambda_handler(event, context):
     logger.debug('Load Webhook URL')
     webhookUrl=load_parameter(event, 'webhookurl')
     logger.debug(webhookUrl) 
+    logger.debug('Load Webhook Username')
+    webhookUsername=load_parameter(event, 'webhookusername')
+    logger.debug('Load Webhook Password')
+    webhookPassword=load_parameter(event, 'webhookpassword')
     
     logger.debug('Load body')
     data=event.get('body')
+
+    logger.debug('Load http method used')
+    httpMethod= event['requestContext']['http']['method']
+    logger.debug(httpMethod)
 
     logger.debug('Parse filter')
     filter=parse_json(filter)
@@ -30,9 +38,13 @@ def lambda_handler(event, context):
     result=eval_filter(filter, data)
     
     if result == True and webhookUrl is not None:
+        webhookAuth=None
+        if webhookUsername is not None or webhookPassword is not None:
+            webhookAuth=(webhookUsername, webhookPassword)
+
         logger.info('Forward data using Webhook')
         try:
-            r = requests.put(webhookUrl, headers={'Content-type': 'application/json'}, data=json.dumps(data))
+            r = requests.request(httpMethod, webhookUrl, headers={'Content-type': 'application/json'}, data=json.dumps(data), auth=webhookAuth)
             logger.debug('Success!')
             logger.debug(r)
             httpResult={
