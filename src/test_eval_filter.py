@@ -246,6 +246,19 @@ do_test_eval_filter({
   "field-2": "def"
 }, False, "Empty in operator")
 
+do_test_eval_filter({
+  "operator": "true"
+}, {
+  "field-1": "abc",
+  "field-2": "def"
+}, True, "True operator")
+
+do_test_eval_filter({
+  "operator": "false"
+}, {
+  "field-1": "abc",
+  "field-2": "def"
+}, False, "False operator")
 
 do_test_eval_filter({
   "operator": "contains",

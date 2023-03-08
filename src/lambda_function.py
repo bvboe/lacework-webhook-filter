@@ -8,22 +8,34 @@ logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     logger.info('Retrieved new message!')
-    logger.info(event)
-    logger.info(context)
-    
+    logger.info("Event: " + str(event))
+    logger.info("Context: " + str(context))
+
+    logger.debug('Load body')
+    data=event.get('body')
+    logger.info("Body: " + str(data))
+    if data == "" or data is None:
+        #Set the data to a default value
+        data={}
+
     logger.debug('Load filter')
     filter=load_parameter(event, 'filter')
-    logger.debug(filter) 
+    if filter == "" or filter is None:
+        #Set filter default behavior to always forward if it's not already set
+        logger.info("Filter not configured") 
+        filter={"operator": "true"}
+    else:
+        logger.info("Filter: " + str(filter)) 
+
     logger.debug('Load Webhook URL')
     webhookUrl=load_parameter(event, 'webhookurl')
     logger.debug(webhookUrl) 
+
     logger.debug('Load Webhook Username')
     webhookUsername=load_parameter(event, 'webhookusername')
+
     logger.debug('Load Webhook Password')
     webhookPassword=load_parameter(event, 'webhookpassword')
-    
-    logger.debug('Load body')
-    data=event.get('body')
 
     logger.debug('Load http method used')
     httpMethod= event['requestContext']['http']['method']
@@ -65,8 +77,7 @@ def lambda_handler(event, context):
             'body': "Message not forwarded"
         }
 
-    logger.debug('Result returned to client:')
-    logger.debug(httpResult)
+    logger.info('Result: ' + str(httpResult))
     logger.info('End processing message!')
 
     return httpResult
@@ -102,8 +113,12 @@ def eval_filter(filter, data):
         return eval_and(filter, data)
     elif operator == 'or':
         return eval_or(filter, data)
+    elif operator == 'true':
+        return True
+    elif operator == 'false':
+        return False
     else:
-        return 'not implemented'
+        raise Exception("Operator " + str(operator) + " not implemented")
 
 def getField(field, data):
     #No data, return none
