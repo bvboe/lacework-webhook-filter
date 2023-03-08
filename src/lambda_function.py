@@ -120,6 +120,13 @@ def eval_filter(filter, data):
     else:
         raise Exception("Operator " + str(operator) + " not implemented")
 
+#More intelligent data retrieval, used for parsing filter and ensuring the filter is configured correctly
+def getJsonAttributeAndValidate(dataPayload, attribute):
+    result=dataPayload.get(attribute)
+    if result is None:
+        raise Exception("Attribute \"" + attribute + "\" not found in payload: " + str(dataPayload))
+    return result
+
 def getField(field, data):
     #No data, return none
     if data is None:
@@ -138,14 +145,14 @@ def getField(field, data):
         return getField(remainingField, data.get(firstField))
 
 def eval_equals(filter, data):
-    field=filter.get('field')
-    expectedValue=filter.get('value')
+    field=getJsonAttributeAndValidate(filter, 'field')
+    expectedValue=getJsonAttributeAndValidate(filter, 'value')
     actualValue=getField(field, data)
     return expectedValue == actualValue
 
 def eval_contains(filter, data):
-    field=filter.get('field')
-    expectedValue=filter.get('value')
+    field=getJsonAttributeAndValidate(filter, 'field')
+    expectedValue=getJsonAttributeAndValidate(filter, 'value')
     actualValue=getField(field, data)
     
     if actualValue is None:
@@ -154,27 +161,27 @@ def eval_contains(filter, data):
         return expectedValue in actualValue
 
 def eval_in(filter, data):
-    field=filter.get('field')
-    values=filter.get('values')
+    field=getJsonAttributeAndValidate(filter, 'field')
+    expectedValues=getJsonAttributeAndValidate(filter, 'values')
     actualValue=data.get(field)
-    for v in values:
+    for v in expectedValues:
        if v == actualValue:
            return True
     return False
 
 def eval_not(filter, data):
-    f=filter.get('filter')
+    f=getJsonAttributeAndValidate(filter, 'filter')
     return not eval_filter(f, data)
 
 def eval_and(filter, data):
-    filters=filter.get('filters')
+    filters=getJsonAttributeAndValidate(filter, 'filters')
     for f in filters:
        if not eval_filter(f, data):
            return False
     return True
     
 def eval_or(filter, data):
-    filters=filter.get('filters')
+    filters=getJsonAttributeAndValidate(filter, 'filters')
     for f in filters:
        if eval_filter(f, data):
            return True
